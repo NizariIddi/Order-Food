@@ -19,6 +19,13 @@
           <a href="/orders" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Orders</a>
           <a href="/login" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Login</a>
           <a href="/admin/products" class="px-4 py-2 rounded-lg bg-green-500 font-medium transition-colors duration-200">Admin</a>
+          <a 
+          id="logoutBtn" 
+          href="#"
+          class="px-4 py-2 rounded-lg hover:bg-red-500 transition-colors duration-200 cursor-pointer"
+        >
+          Logout
+        </a>
         </div>
       </div>
     </div>
@@ -275,6 +282,31 @@
     }
 
     fetchProducts();
+
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    // Call backend logout route
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include" // important for session cookies
+    });
+
+    const data = await response.json();
+    console.log(data.message); // Optional: show "Logged out successfully"
+
+    // Clear any frontend data
+    localStorage.removeItem("user"); // if storing user info
+    // localStorage.removeItem("token"); // if you had JWT too
+
+    // Redirect to login page
+    window.location.href = "/";
+
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+});
+
   </script>
 </body>
 </html>

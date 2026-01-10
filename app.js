@@ -39,7 +39,7 @@ app.use(passport.session());
 require("./config/passport"); // see previous step for this file
 
 // Static files
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static("images"));
 
 // Routes
