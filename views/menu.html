@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50">
+
+<!-- Navigation Bar -->
+<nav class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between py-4">
+      <a href="/" class="text-2xl md:text-3xl font-bold mb-3 md:mb-0">🍔 Food Ordering</a>
+      <div class="flex flex-wrap gap-2 md:gap-1">
+        <a href="/" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Home</a>
+        <a href="/menu" class="px-4 py-2 rounded-lg bg-green-500 font-medium transition-colors duration-200">Menu</a>
+        <a href="/orders" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Orders</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="flex flex-col lg:flex-row min-h-screen">
+
+  <!-- MENU ITEMS -->
+  <div class="w-full lg:w-3/4 p-4 md:p-6 lg:p-8">
+    <div class="mb-6">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Our Menu</h1>
+      <p class="text-gray-600">Select your favorite items and add them to cart</p>
+    </div>
+    <div id="menuContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
+  </div>
+
+  <!-- CART SIDEBAR -->
+  <div class="w-full lg:w-1/4 bg-white lg:border-l shadow-lg order-first lg:order-last lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)]">
+    <div class="p-4 md:p-6 lg:overflow-y-auto lg:h-full">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">🛒 Cart</h2>
+
+      <div id="cartItems" class="space-y-3 mb-4"></div>
+
+      <div class="border-t pt-4 mt-4">
+        <div class="flex justify-between items-center mb-4">
+          <span class="text-lg font-semibold text-gray-700">Total:</span>
+          <span class="text-2xl font-bold text-green-600">$<span id="cartTotal">0.00</span></span>
+        </div>
+
+        <button
+          id="placeOrderBtn"
+          class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg w-full font-semibold shadow-lg transition-colors duration-200">
+          Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Success Toast -->
+<div id="successToast" class="hidden fixed top-20 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg z-50">
+  <p id="toastMessage" class="font-semibold"></p>
+</div>
+
+<!-- Order Confirmation Modal -->
+<div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full">
+    <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-white">Confirm Order</h2>
+      <button onclick="closeOrderModal()" class="text-white hover:text-gray-200 text-3xl font-bold">&times;</button>
+    </div>
+    <div class="p-6">
+      <div class="mb-4">
+        <h3 class="font-semibold text-lg mb-2">Order Summary</h3>
+        <div id="orderSummary" class="space-y-2 mb-4"></div>
+        <div class="border-t pt-3 mt-3">
+          <div class="flex justify-between text-lg font-bold">
+            <span>Total:</span>
+            <span class="text-green-600">$<span id="modalTotal">0.00</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <button onclick="confirmOrder()" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-colors duration-200">
+          Confirm Order
+        </button>
+        <button onclick="closeOrderModal()" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-semibold transition-colors duration-200">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let cart = [];
+
+function showToast(message) {
+  const toast = document.getElementById('successToast');
+  document.getElementById('toastMessage').textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(() => { toast.classList.add('hidden'); }, 3000);
+}
+
+/* ================= LOAD MENU ================= */
+async function loadMenu() {
+  const res = await fetch("/api/menu");
+  const items = await res.json();
+
+  const container = document.getElementById("menuContainer");
+  container.innerHTML = "";
+
+  items.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden relative";
+
+    // Check availability
+    const isAvailable = item.status === "available";
+    const badge = isAvailable 
+      ? "" 
+      : `<span class="absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-700">Unavailable</span>`;
+
+    div.innerHTML = `
+      ${badge}
+      <img src="${item.image_url}" class="w-full h-48 object-cover">
+      <div class="p-4">
+        <h3 class="font-bold text-xl mb-2 text-gray-800">${item.name}</h3>
+        <p class="text-gray-600 mb-3 line-clamp-2">${item.description}</p>
+        <div class="flex justify-between items-center">
+          <span class="text-2xl font-bold text-green-600">$${item.price}</span>
+          <button
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}"
+            ${!isAvailable ? 'disabled' : `onclick="addToCart(${item.id}, '${item.name}', ${item.price})"`}>
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+loadMenu();
+
+/* ================= CART ================= */
+function addToCart(id, name, price) {
+  const existing = cart.find(i => i.id === id);
+  if (existing) { existing.quantity++; } 
+  else { cart.push({ id, name, price, quantity: 1 }); }
+
+  showToast(`${name} added to cart!`);
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const cartDiv = document.getElementById("cartItems");
+  const totalSpan = document.getElementById("cartTotal");
+  cartDiv.innerHTML = "";
+  let total = 0;
+
+  if (cart.length === 0) {
+    cartDiv.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty</p>';
+  }
+
+  cart.forEach(item => {
+    total += item.price * item.quantity;
+    const div = document.createElement("div");
+    div.className = "bg-gray-50 rounded-lg p-3";
+    div.innerHTML = `
+      <div class="flex justify-between items-start mb-2">
+        <div class="flex-1">
+          <p class="font-semibold text-gray-800">${item.name}</p>
+          <p class="text-sm text-gray-600">$${item.price} × ${item.quantity}</p>
+        </div>
+        <p class="font-bold text-gray-800">$${(item.price * item.quantity).toFixed(2)}</p>
+      </div>
+      <div class="flex gap-2 justify-end">
+        <button onclick="changeQty(${item.id}, -1)" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors">−</button>
+        <button onclick="changeQty(${item.id}, 1)" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold transition-colors">+</button>
+      </div>
+    `;
+    cartDiv.appendChild(div);
+  });
+
+  totalSpan.textContent = total.toFixed(2);
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.quantity += delta;
+  if (item.quantity <= 0) { cart = cart.filter(i => i.id !== id); }
+  updateCartUI();
+}
+
+/* ================= PLACE ORDER ================= */
+document.getElementById("placeOrderBtn").addEventListener("click", openOrderModal);
+
+function openOrderModal() {
+  if (cart.length === 0) { alert("Cart is empty"); return; }
+
+  const summaryDiv = document.getElementById('orderSummary');
+  const modalTotal = document.getElementById('modalTotal');
+  summaryDiv.innerHTML = '';
+  let total = 0;
+
+  cart.forEach(item => {
+    total += item.price * item.quantity;
+    const div = document.createElement('div');
+    div.className = 'flex justify-between text-sm';
+    div.innerHTML = `
+      <span>${item.name} × ${item.quantity}</span>
+      <span class="font-semibold">$${(item.price * item.quantity).toFixed(2)}</span>
+    `;
+    summaryDiv.appendChild(div);
+  });
+
+  modalTotal.textContent = total.toFixed(2);
+  document.getElementById('orderModal').classList.remove('hidden');
+}
+
+function closeOrderModal() { document.getElementById('orderModal').classList.add('hidden'); }
+
+async function confirmOrder() {
+  const payload = {
+    items: cart.map(item => ({ menu_item_id: item.id, quantity: item.quantity, price: item.price }))
+  };
+  const res = await fetch("/api/orders", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+  const result = await res.json();
+
+  if (res.ok) {
+    closeOrderModal();
+    showToast(`Order placed successfully! Order ID: ${result.orderId}`);
+    cart = [];
+    updateCartUI();
+  } else {
+    alert(result.message || "Failed to place order");
+  }
+}
+</script>
+
+</body>
+</html>

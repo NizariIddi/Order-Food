@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Food Ordering</title>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-green-100 min-h-screen">
+  <!-- Navigation Bar -->
+  <nav class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between py-4">
+        <a href="/" class="text-2xl md:text-3xl font-bold mb-3 md:mb-0">🍔 Food Ordering</a>
+        <div class="flex flex-wrap gap-2 md:gap-1">
+          <a href="/" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Home</a>
+          <a href="/login" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Login</a>
+          <a href="/register" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Register</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mx-auto px-4 py-12 md:py-20">
+    <div class="max-w-4xl mx-auto text-center">
+      <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6">
+        Welcome to Food Ordering!
+      </h2>
+      <p class="text-lg md:text-xl text-gray-600 mb-8">
+        Order your favorite meals online with ease and convenience
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a href="/menu" class="w-full sm:w-auto bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors duration-200 shadow-lg">
+          Browse Menu
+        </a>
+        <a href="/register" class="w-full sm:w-auto bg-white text-green-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-lg border-2 border-green-600">
+          Sign Up Now
+        </a>
+      </div>
+      
+      <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+          <div class="text-4xl mb-4">🚀</div>
+          <h3 class="text-xl font-bold mb-2">Fast Delivery</h3>
+          <p class="text-gray-600">Get your food delivered quickly to your doorstep</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg">          <div class="text-4xl mb-4">🍕</div>
+          <h3 class="text-xl font-bold mb-2">Fresh Food</h3>
+          <p class="text-gray-600">Enjoy delicious meals made with fresh ingredients</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+          <div class="text-4xl mb-4">💳</div>
+          <h3 class="text-xl font-bold mb-2">Easy Payment</h3>
+          <p class="text-gray-600">Multiple payment options for your convenience</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-800 text-white py-8 mt-20">
+    <div class="container mx-auto px-4 text-center">
+      <p>&copy; 2026 Food Ordering. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

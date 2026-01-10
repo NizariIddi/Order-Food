@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in { animation: fadeIn 0.5s ease-in-out; }
+    .slide-in { animation: slideIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .status-pending { background: #fef3c7; color: #d97706; }
+    .status-in-progress { background: #ddd6fe; color: #7c3aed; }
+    .status-completed { background: #d1fae5; color: #059669; }
+    .status-cancelled { background: #fee2e2; color: #dc2626; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+<!-- Navigation Bar -->
+<nav class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between py-4">
+      <a href="/" class="text-2xl md:text-3xl font-bold mb-3 md:mb-0">🍔 Food Ordering</a>
+      <div class="flex flex-wrap gap-2 md:gap-1">
+        <a href="/" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Home</a>
+        <a href="/menu" class="px-4 py-2 rounded-lg hover:bg-green-500 transition-colors duration-200">Menu</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="container mx-auto px-4 py-8">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-800">My Orders</h1>
+    <button id="refreshBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-colors duration-200">
+      🔄 Refresh
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-600 fade-in">
+      <p class="text-sm text-gray-600 font-medium mb-1">Total Orders</p>
+      <p id="totalOrders" class="text-3xl font-bold text-gray-800">0</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-600 fade-in">
+      <p class="text-sm text-gray-600 font-medium mb-1">Total Spent</p>
+      <p class="text-3xl font-bold text-green-600">$<span id="totalSpent">0.00</span></p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500 fade-in">
+      <p class="text-sm text-gray-600 font-medium mb-1">Pending / In Progress</p>
+      <p id="pendingOrders" class="text-3xl font-bold text-yellow-600">0</p>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500 fade-in">
+      <p class="text-sm text-gray-600 font-medium mb-1">Completed</p>
+      <p id="completedOrders" class="text-3xl font-bold text-green-600">0</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white p-4 md:p-6 rounded-xl shadow-md mb-8">
+    <h3 class="font-semibold text-gray-700 mb-3">Filter by Status</h3>
+    <div class="flex gap-2 flex-wrap">
+      <button class="filter-btn px-4 py-2 rounded-lg bg-green-600 text-white font-medium transition-all duration-200 hover:bg-green-700" data-status="all">All Orders</button>
+      <button class="filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium transition-all duration-200 hover:bg-gray-200" data-status="pending">⏳ Pending</button>
+      <button class="filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium transition-all duration-200 hover:bg-gray-200" data-status="in-progress">👨‍🍳 In Progress</button>
+      <button class="filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium transition-all duration-200 hover:bg-gray-200" data-status="completed">✅ Completed</button>
+      <button class="filter-btn px-4 py-2 rounded-lg bg-gray-100 text-gray-700 font-medium transition-all duration-200 hover:bg-gray-200" data-status="cancelled">❌ Cancelled</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loadingState" class="text-center py-12">
+    <div class="animate-spin h-12 w-12 border-4 border-green-600 border-t-transparent rounded-full mx-auto"></div>
+    <p class="mt-4 text-gray-600 font-medium">Loading your orders...</p>
+  </div>
+
+  <!-- Orders -->
+  <div id="ordersContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6"></div>
+
+  <!-- Empty -->
+  <div id="emptyState" class="hidden text-center py-16 bg-white rounded-xl shadow-md">
+    <div class="text-6xl mb-4">🍽️</div>
+    <h3 class="text-2xl font-bold text-gray-800 mb-2">No orders found</h3>
+    <p class="text-gray-600 mb-6">Start ordering delicious meals to see your history here.</p>
+    <a href="/menu" class="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200">
+      Browse Menu
+    </a>
+  </div>
+
+</main>
+
+<!-- Order Details Modal -->
+<div id="orderModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-white">Order Details</h2>
+      <button onclick="closeOrderModal()" class="text-white hover:text-gray-200 text-3xl font-bold">&times;</button>
+    </div>
+    <div class="p-6">
+      <div id="orderDetailsContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="successToast" class="hidden fixed top-20 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg z-50">
+  <p id="toastMessage" class="font-semibold"></p>
+</div>
+
+<script>
+const container = document.getElementById("ordersContainer");
+const loadingState = document.getElementById("loadingState");
+const emptyState = document.getElementById("emptyState");
+const refreshBtn = document.getElementById("refreshBtn");
+
+let allOrders = [];
+let currentFilter = "all";
+
+const statusIcons = {
+  pending: "⏳",
+  "in-progress": "👨‍🍳",
+  completed: "✅",
+  cancelled: "❌"
+};
+const statusClasses = {
+  pending: "status-pending",
+  "in-progress": "status-in-progress",
+  completed: "status-completed",
+  cancelled: "status-cancelled"
+};
+
+refreshBtn.onclick = fetchOrders;
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.onclick = () => {
+    currentFilter = btn.dataset.status;
+    document.querySelectorAll(".filter-btn").forEach(b => {
+      b.classList.remove("bg-green-600","text-white");
+      b.classList.add("bg-gray-100", "text-gray-700");
+    });
+    btn.classList.remove("bg-gray-100", "text-gray-700");
+    btn.classList.add("bg-green-600","text-white");
+    filterOrders();
+  };
+});
+
+async function fetchOrders() {
+  loadingState.style.display = "block";
+  container.innerHTML = "";
+  emptyState.classList.add("hidden");
+
+  try {
+    const res = await fetch("/api/orders");
+    allOrders = await res.json();
+
+    allOrders.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+    loadingState.style.display = "none";
+    updateStats();
+    filterOrders();
+  } catch(err) {
+    loadingState.innerHTML = '<p class="text-red-500">Failed to load orders.</p>';
+    console.error(err);
+  }
+}
+
+function updateStats() {
+  document.getElementById("totalOrders").textContent = allOrders.length;
+  document.getElementById("totalSpent").textContent =
+    allOrders.reduce((s,o)=>s+parseFloat(o.total_price),0).toFixed(2);
+  document.getElementById("pendingOrders").textContent =
+    allOrders.filter(o => o.status === "pending" || o.status === "in-progress").length;
+  document.getElementById("completedOrders").textContent =
+    allOrders.filter(o => o.status === "completed").length;
+}
+
+function filterOrders() {
+  const orders = currentFilter === "all" ? allOrders : allOrders.filter(o => o.status === currentFilter);
+  renderOrders(orders);
+}
+
+function renderOrders(orders) {
+  container.innerHTML = "";
+  if (!orders.length) {
+    emptyState.classList.remove("hidden");
+    return;
+  }
+
+  orders.forEach(order => {
+    const div = document.createElement("div");
+    div.className = "bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 fade-in cursor-pointer";
+    div.onclick = () => showOrderDetails(order);
+
+    const statusLabel = order.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    div.innerHTML = `
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="font-bold text-xl text-gray-800">Order #${order.id}</h3>
+          <p class="text-sm text-gray-500 mt-1">${new Date(order.created_at).toLocaleString()}</p>
+        </div>
+        <span class="px-4 py-2 rounded-full text-sm font-semibold ${statusClasses[order.status]}">
+          ${statusIcons[order.status]} ${statusLabel}
+        </span>
+      </div>
+      <div class="border-t pt-4">
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600 font-medium">Total Amount:</span>
+          <span class="text-2xl font-bold text-green-600">$${parseFloat(order.total_price).toFixed(2)}</span>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function showOrderDetails(order) {
+  const content = document.getElementById('orderDetailsContent');
+  const statusLabel = order.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+  let itemsHtml = '';
+  if (order.items && Array.isArray(order.items)) {
+    itemsHtml = order.items.map(item => `
+      <div class="flex justify-between py-2 border-b">
+        <span class="font-medium">${item.name || item.item}</span>
+        <span class="text-gray-600">${item.quantity} × $${item.price}</span>
+      </div>
+    `).join('');
+  }
+
+  content.innerHTML = `
+    <div class="mb-6">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="text-2xl font-bold text-gray-800">Order #${order.id}</h3>
+          <p class="text-gray-600 mt-1">${new Date(order.created_at).toLocaleString()}</p>
+        </div>
+        <span class="px-4 py-2 rounded-full text-sm font-semibold ${statusClasses[order.status]}">
+          ${statusIcons[order.status]} ${statusLabel}
+        </span>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4 mb-4">
+        <h4 class="font-semibold text-gray-700 mb-3">Order Items</h4>
+        ${itemsHtml || '<p class="text-gray-500">No items information available</p>'}
+      </div>
+
+      <div class="border-t pt-4 mb-4">
+        <div class="flex justify-between text-lg">
+          <span class="font-semibold">Total:</span>
+          <span class="text-2xl font-bold text-green-600">$${parseFloat(order.total_price).toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mt-4">
+        <button id="cancelOrderBtn"
+                class="flex-1 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-colors duration-200"
+                ${order.status === "completed" || order.status === "cancelled" ? "disabled opacity-50 cursor-not-allowed" : ""}>
+          ❌ Cancel Order
+        </button>
+        <button onclick="closeOrderModal()"
+                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+          Close
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('orderModal').classList.remove('hidden');
+
+  document.getElementById('cancelOrderBtn').onclick = async () => {
+    if (!confirm("Are you sure you want to cancel this order?")) return;
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast(`Order #${order.id} cancelled successfully!`);
+        closeOrderModal();
+        fetchOrders();
+      } else {
+        const result = await res.json();
+        alert(result.message || "Failed to cancel order");
+      }
+    } catch(err) {
+      alert("Error cancelling order");
+      console.error(err);
+    }
+  };
+}
+
+function closeOrderModal() {
+  document.getElementById('orderModal').classList.add('hidden');
+}
+
+function showToast(message) {
+  const toast = document.getElementById('successToast');
+  document.getElementById('toastMessage').textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+fetchOrders();
+</script>
+</body>
+</html>
