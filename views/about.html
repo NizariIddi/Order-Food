@@ -60,6 +60,18 @@
       </div>
     </section>
 
+    <!-- Testimonials -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-10 gradient-text text-center">
+        What Our Customers Say
+      </h2>
+
+      <div id="testimonialsContainer" class="grid md:grid-cols-3 gap-8">
+        <!-- Testimonials will be inserted here dynamically -->
+      </div>
+    </section>
+
+
     <!-- Contact -->
     <section>
       <h2 class="text-3xl font-bold mb-6 gradient-text">Contact Us</h2>
@@ -68,7 +80,12 @@
         <div class="p-6 border rounded-2xl">
           <i class="fas fa-envelope text-green-600 mb-2"></i>
           <p class="font-semibold">Email</p>
-          <p class="text-gray-600">kn03nneeez@gmail.com</p>
+          <a 
+            href="mailto:kn03nneeez@gmail.com"
+            class="text-gray-600 hover:text-green-600 transition-colors"
+          >
+            kn03nneeez@gmail.com
+          </a>
         </div>
 
         <div class="p-6 border rounded-2xl">
@@ -138,5 +155,49 @@
     </div>
   </footer>
 
+
+  <script>
+    async function loadTestmonials() {
+        try {
+          const res = await fetch('/api/testmonials');
+          const testmonials = await res.json();
+          console.log(testmonials)
+
+          const container = document.getElementById('testimonialsContainer');
+
+          if(testmonials.length === 0) {
+            container.innerHTML = `
+              <p class="text-center text-gray-500 col-span-3">
+                No testimonials yet. Be the first to leave a feedback.
+              </p>
+            `
+            return;
+          }
+
+          container.innerHTML = testmonials.map(t => `
+            <div class="bg-green-50 p-6 rounded-2xl shadow-sm">
+              <div class="flex items-center mb-4">
+                <div class="w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">
+                  ${t.name.charAt(0)}
+                </div>
+                <div class="ml-4">
+                  <p class="font-semibold">${t.name}</p>
+                  <div class="text-yellow-400 text-md font-bold">
+                    ${"★".repeat(t.rating)}${"☆".repeat(5 - t.rating)}
+                  </div>
+                </div>
+              </div>
+              <p class="text-gray-600 text-sm">
+                ${t.feedback}
+              </p>
+            </div>
+          `).join("");
+        }catch(error) {
+          console.error("Failed to load testmonials: ", error)
+        }
+    }
+
+    loadTestmonials();
+  </script>
 </body>
 </html>

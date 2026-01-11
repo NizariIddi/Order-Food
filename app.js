@@ -12,6 +12,7 @@ const adminRoutes = require("./routes/admin");
 const redirectIfLoggedIn = require("./middleware/redirectIfLoggedIn");
 const feedbackRoutes = require("./routes/feedback");
 const statsRouter = require("./routes/stats");
+const testimonialsRoute = require("./routes/testmonials");
 const app = express();
 
 // Body parsers
@@ -51,6 +52,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/stats", statsRouter);
+app.use("/api/testmonials", testimonialsRoute);
 
 // Google OAuth routes
 app.get(
