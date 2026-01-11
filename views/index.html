@@ -196,6 +196,17 @@
       </div>
     </div>
 
+    <section class="mx-auto px-4 py-16 max-w-6xl">
+      <h2 class="text-3xl font-bold mb-10 gradient-text text-center">
+        Hear From Our Happy Customers
+      </h2>
+
+      <div id="testimonialsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 justify-items-center">
+        <!-- Testimonials will be inserted here dynamically -->
+      </div>
+    </section>
+
+
     <!-- CTA Section -->
     <div class="container mx-auto px-4 py-16">
       <div class="max-w-4xl mx-auto bg-gradient-to-br from-green-600 via-green-700 to-green-800 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden shadow-2xl">
@@ -283,6 +294,50 @@
     }
   }
 
+async function loadTestimonials() {
+    try {
+        const res = await fetch('/api/testmonials');
+        const testimonials = await res.json();
+
+        const container = document.getElementById('testimonialsContainer');
+
+        if (!testimonials || testimonials.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-3 text-center text-gray-500">
+                    No testimonials yet. Be the first to leave feedback.
+                </div>
+            `;
+            return;
+        }
+
+        // Apply proper grid responsiveness
+        container.innerHTML = testimonials.map(t => `
+            <div class="bg-green-50 p-6 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-start gap-4 hover:shadow-md transition-shadow duration-200">
+                <div class="flex-shrink-0 w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg">
+                    ${t.name.charAt(0)}
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="font-semibold text-gray-800">${t.name}</p>
+                        <div class="text-yellow-400 text-sm font-bold">
+                            ${"★".repeat(t.rating)}${"☆".repeat(5 - t.rating)}
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        ${t.feedback}
+                    </p>
+                </div>
+            </div>
+        `).join("");
+
+        // Add responsive classes to container
+        container.className = "grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8";
+    } catch (error) {
+        console.error("Failed to load testimonials:", error);
+    }
+}
+
+  loadTestimonials();
   loadStats();
 </script>
 

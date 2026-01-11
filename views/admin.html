@@ -273,21 +273,29 @@
             <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs truncate">${p.image_url}</td>
             <td class="px-3 py-2.5">
               <div class="flex justify-center gap-1.5">
-                <button onclick='openEditModal(${JSON.stringify(p)})' 
-                  class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white p-1.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:scale-110 active:scale-95"
+                <button 
+                  onclick='openEditModal(${JSON.stringify(p)})'
+                  class="p-1.5 rounded-lg hover:bg-blue-50 transition-all transform hover:scale-110 active:scale-95"
                   title="Edit">
-                  <i class="fas fa-pen text-xs"></i>
-                </button>
-                <button onclick="toggleStatus(${p.id}, '${p.status}')" 
-                  class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white p-1.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:scale-110 active:scale-95"
-                  title="Toggle Status">
-                  <i class="fas fa-sync-alt text-xs"></i>
-                </button>
-                <button onclick="deleteProduct(${p.id})" 
-                  class="hover:from-red-700 hover:to-red-800 text-red p-1.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:scale-110 active:scale-95"
-                  title="Delete">
-                  <i class="fas fa-trash text-xs"></i>
-                </button>
+                  <i class="fas fa-pen text-blue-600 hover:text-blue-700 text-xs"></i>
+              </button>
+
+              <button 
+                onclick="toggleStatus(${p.id}, '${p.status}')"
+                class="p-1.5 rounded-lg hover:bg-yellow-50 transition-all transform hover:scale-110 active:scale-95"
+                title="Change Status"
+              >
+                <i class="fas fa-sync-alt text-yellow-600 hover:text-yellow-700 text-xs"></i>
+              </button>
+
+                <button 
+                onclick="deleteProduct(${p.id})"
+                class="p-1.5 rounded-lg hover:bg-red-50 transition-all transform hover:scale-110 active:scale-95"
+                title="Delete"
+              >
+                <i class="fas fa-trash text-red-600 hover:text-red-700 text-xs"></i>
+              </button>
+
               </div>
             </td>
           `;

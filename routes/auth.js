@@ -91,7 +91,7 @@ router.post("/forgot-password", (req, res) => {
     db.query(
       "UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE email = ?", [hashedToken, expires, email], 
       () => {
-        const resetLink = `https://aa198479996c.ngrok-free.app/reset-password/${token}`;
+        const resetLink = `https://0a2e8153d859d4.lhr.life/reset-password/${token}`;
 
         transporter.sendMail({
   from: `"Food Ordering Support" <${process.env.EMAIL_USER}>`,
