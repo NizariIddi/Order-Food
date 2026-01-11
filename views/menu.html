@@ -8,6 +8,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+</style>
+
+
 <body class="bg-gradient-to-br from-gray-50 to-gray-100">
 
 <!-- Navigation Bar -->
@@ -143,6 +154,53 @@
     </div>
   </div>
 </div>
+
+
+<!-- Feedback && Rating section-->
+
+ <!-- Floating Feedback Button -->
+<div class="fixed bottom-6 right-6 z-50">
+  <button
+    id="feedbackBtn"
+    class="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+  >
+    <i class="fas fa-star text-lg"></i>
+  </button>
+
+  <!-- Feedback Popup -->
+  <div
+    id="feedbackPopup"
+    class="hidden absolute bottom-16 right-0 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 animate-fade-in"
+  >
+    <h3 class="text-sm font-bold text-gray-800 mb-2">Rate your experience</h3>
+
+    <!-- Rating Stars -->
+    <div class="flex gap-1 mb-3" id="ratingStars">
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="1"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="2"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="3"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="4"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="5"></i>
+    </div>
+
+    <!-- Feedback Input -->
+    <textarea
+      id="feedbackText"
+      placeholder="Write your feedback..."
+      class="w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none mb-3"
+      rows="3"
+    ></textarea>
+
+    <!-- Submit -->
+    <button
+      id="submitFeedback"
+      class="w-full bg-green-600 hover:bg-green-700 text-white text-xs py-2 rounded-lg font-semibold transition"
+    >
+      Submit
+    </button>
+  </div>
+</div>
+
 
 <script>
 let cart = [];
@@ -335,6 +393,59 @@ document.getElementById("logoutBtn").addEventListener("click", async (e) => {
       alert("Failed to logout. Please try again.");
     }
   }
+});
+
+
+// Feedback and Rating Section
+let selectedRating = 0;
+
+const feedbackBtn = document.getElementById("feedbackBtn");
+const feedbackPopup = document.getElementById("feedbackPopup");
+const stars = document.querySelectorAll("#ratingStars i");
+
+feedbackBtn.addEventListener("click", () => {
+  feedbackPopup.classList.toggle("hidden");
+});
+
+/* Star Rating */
+stars.forEach(star => {
+  star.addEventListener("click", () => {
+    selectedRating = star.dataset.value;
+    stars.forEach(s => {
+      s.classList.toggle("text-yellow-400", s.dataset.value <= selectedRating);
+      s.classList.toggle("text-gray-300", s.dataset.value > selectedRating);
+    });
+  });
+});
+
+/* Submit Feedback */
+document.getElementById("submitFeedback").addEventListener("click", async () => {
+  const feedback = document.getElementById("feedbackText").value;
+
+  if (selectedRating === 0) {
+    alert("Please select a rating ⭐");
+    return;
+  }
+
+  //send to backend
+
+  await fetch("/api/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      rating: selectedRating,
+      feedback
+    })
+  });
+
+  showToast("Thank you for your feedback! ❤️");
+
+  // Reset
+  selectedRating = 0;
+  stars.forEach(s => s.classList.replace("text-yellow-400", "text-gray-300"));
+  document.getElementById("feedbackText").value = "";
+  feedbackPopup.classList.add("hidden");
 });
 
 </script>

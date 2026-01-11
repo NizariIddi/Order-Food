@@ -38,3 +38,12 @@ CREATE TABLE order_items (
 ALTER TABLE menu_items
 ADD COLUMN status ENUM('available','unavailable') DEFAULT 'available';
 
+CREATE TABLE feedback (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  feedback TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+

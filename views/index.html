@@ -112,15 +112,15 @@
             <!-- Stats -->
             <div class="grid grid-cols-3 gap-4 pt-8 border-t border-gray-200">
               <div>
-                <div class="text-2xl md:text-3xl font-bold text-green-600">500+</div>
+                <div id="dishesCount" class="text-2xl md:text-3xl font-bold text-green-600">500+</div>
                 <div class="text-xs text-gray-600">Dishes</div>
               </div>
               <div>
-                <div class="text-2xl md:text-3xl font-bold text-green-600">10k+</div>
+                <div id="customersCount" class="text-2xl md:text-3xl font-bold text-green-600">10k+</div>
                 <div class="text-xs text-gray-600">Customers</div>
               </div>
               <div>
-                <div class="text-2xl md:text-3xl font-bold text-green-600">4.9★</div>
+                <div id="ratingValue" class="text-2xl md:text-3xl font-bold text-green-600">4.9★</div>
                 <div class="text-xs text-gray-600">Rating</div>
               </div>
             </div>
@@ -153,7 +153,7 @@
                 </div>
                 <div>
                   <div class="text-xs font-bold">Top Rated</div>
-                  <div class="text-xs text-gray-500">4.9/5.0</div>
+                  <div id="top_rated" class="text-xs text-gray-500">4.9/5.0</div>
                 </div>
               </div>
             </div>
@@ -267,5 +267,24 @@
       </div>
     </div>
   </footer>
+
+  <script>
+  async function loadStats() {
+    try {
+      const res = await fetch("/api/stats");
+      const data = await res.json();
+
+      document.getElementById("dishesCount").textContent = data.dishes + "+";
+      document.getElementById("customersCount").textContent = data.customers + "+";
+      document.getElementById("ratingValue").textContent = data.rating + "★";
+      document.getElementById('top_rated').textContent = data.rating;
+    } catch (err) {
+      console.error("Failed to load stats:", err);
+    }
+  }
+
+  loadStats();
+</script>
+
 </body>
 </html>
