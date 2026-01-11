@@ -12,120 +12,176 @@
     crossorigin="anonymous"
     referrerpolicy="no-referrer"
   />
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+    .float-animation { animation: float 3s ease-in-out infinite; }
+  </style>
 </head>
 <body class="bg-gradient-to-br from-green-50 to-green-100 min-h-screen">
 
 <!-- Navigation Bar -->
-    <nav class="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-lg sticky top-0 z-50">
-    <div class="container mx-auto px-4">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between py-4">
-        <a href="/" class="text-lg md:text-xl font-bold mb-3 md:mb-0 flex items-center gap-2 hover:opacity-90 transition-opacity">
-          <i class="fas fa-utensils"></i>
-          <span>Food Ordering</span>
-        </a>
-        <div class="flex flex-wrap gap-1">
-          <a href="/" class="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 backdrop-blur-sm flex items-center gap-2">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-          </a>
-          <a href="/login" class="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 backdrop-blur-sm flex items-center gap-2">
-            <i class="fas fa-sign-in-alt"></i>
-            <span>Login</span>
-          </a>
-          <a href="/register" class="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 backdrop-blur-sm flex items-center gap-2">
-            <i class="fas fa-user-plus"></i>
-            <span>Register</span>
-          </a>
+<nav class="bg-white/80 backdrop-blur-lg text-gray-800 shadow-xl sticky top-0 z-50 border-b border-green-100">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between py-3">
+      <a href="/" class="text-base md:text-lg font-semibold mb-2 md:mb-0 flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center shadow-lg">
+          <i class="fas fa-utensils text-white text-sm"></i>
         </div>
+        <span class="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent font-bold">FoodOrdering</span>
+      </a>
+      <div class="flex flex-wrap gap-2">
+        <a href="/" class="px-4 py-2 rounded-lg hover:bg-green-50 transition-all duration-200 flex items-center gap-2 text-sm font-medium">
+          <i class="fas fa-home text-green-600 text-xs"></i>
+          <span>Home</span>
+        </a>
+        <a href="/login" class="px-4 py-2 rounded-lg hover:bg-green-50 transition-all duration-200 flex items-center gap-2 text-sm font-medium">
+          <i class="fas fa-sign-in-alt text-green-600 text-xs"></i>
+          <span>Login</span>
+        </a>
+        <a href="/register" class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 transition-all duration-200 flex items-center gap-2 text-sm font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+          <i class="fas fa-user-plus text-xs"></i>
+          <span>Register</span>
+        </a>
       </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
-<div class="flex items-center justify-center px-4 py-12 md:py-20">
-  <div class="max-w-md w-full">
-    <!-- Login Card -->
-    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
-      <div class="bg-gradient-to-r from-green-500 to-green-600 px-8 py-6">
-        <h2 class="text-3xl font-bold text-white text-center">Welcome Back!</h2>
-        <p class="text-green-100 text-center mt-2">Login to your account</p>
-      </div>
+<div class="flex items-center justify-center px-4 py-8 md:py-12">
+  <div class="max-w-5xl w-full">
+    <!-- Login Card with Image -->
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-2">
       
-      <div class="p-8">
-        <form id="loginForm" class="space-y-6">
+      <!-- Left Side - Image -->
+      <div class="hidden md:block relative bg-gradient-to-br from-green-600 to-green-800 p-8">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-50"></div>
+        
+        <div class="relative h-full flex flex-col justify-between">
           <div>
-            <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
-            <input 
-              type="email" 
-              id="email"
-              name="email" 
-              placeholder="your@email.com" 
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" 
-              required>
+            <div class="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold mb-6">
+              <i class="fas fa-star text-yellow-300"></i> Trusted by 10,000+ customers
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-4">Welcome Back!</h2>
+            <p class="text-green-100 text-sm leading-relaxed">
+              Login to access your favorite meals, track orders, and enjoy exclusive deals. Your next delicious meal is just a click away!
+            </p>
+          </div>
+          
+          <div class="float-animation">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=500&fit=crop" alt="Delicious Pizza" class="rounded-2xl shadow-2xl w-full object-cover aspect-square">
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 mt-6">
+            <div class="text-center">
+              <div class="text-2xl font-bold text-white">500+</div>
+              <div class="text-xs text-green-200">Dishes</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-white">30min</div>
+              <div class="text-xs text-green-200">Delivery</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-white">4.9★</div>
+              <div class="text-xs text-green-200">Rating</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Form -->
+      <div class="p-8 md:p-10">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Sign In</h2>
+          <p class="text-gray-600 text-sm">Enter your credentials to access your account</p>
+        </div>
+        
+        <form id="loginForm" class="space-y-4">
+          <div>
+            <label for="email" class="block text-xs font-bold text-gray-700 mb-1.5">Email Address</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-envelope text-gray-400 text-xs"></i>
+              </div>
+              <input 
+                type="email" 
+                id="email"
+                name="email" 
+                placeholder="your@email.com" 
+                class="w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm" 
+                required>
+            </div>
           </div>
           
           <div>
-            <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-            <input 
-              type="password"
-              id="password" 
-              name="password" 
-              placeholder="Enter your password" 
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200" 
-              required>
+            <label for="password" class="block text-xs font-bold text-gray-700 mb-1.5">Password</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-lock text-gray-400 text-xs"></i>
+              </div>
+              <input 
+                type="password"
+                id="password" 
+                name="password" 
+                placeholder="Enter your password" 
+                class="w-full pl-10 pr-3 py-2.5 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-sm" 
+                required>
+            </div>
           </div>
 
           <div class="flex items-center justify-between">
             <label class="flex items-center">
               <input type="checkbox" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500" name="remember" id="remember">
-              <span class="ml-2 text-sm text-gray-600">Remember me</span>
+              <span class="ml-2 text-xs text-gray-600">Remember me</span>
             </label>
-            <a href="/forgot-password" class="text-sm text-green-600 hover:text-green-700 font-medium">
+            <a href="/forgot-password" class="text-xs text-green-600 hover:text-green-700 font-medium">
               Forgot password?
             </a>
           </div>
 
           <button 
             type="submit"
-            class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-colors duration-200">
-            Login
+            class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] text-sm flex items-center justify-center gap-2">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Sign In</span>
           </button>
         </form>
 
-        <div id="msg" class="mt-4 text-center"></div>
+        <div id="msg" class="mt-3 text-center"></div>
 
         <div class="mt-6 text-center">
-          <p class="text-gray-600">
+          <p class="text-gray-600 text-xs">
             Don't have an account? 
-            <a href="/register" class="text-green-600 hover:text-green-700 font-semibold">Sign up</a>
+            <a href="/register" class="text-green-600 hover:text-green-700 font-semibold">Create one now</a>
           </p>
         </div>
 
-        <div class="mt-8 pt-6 border-t border-gray-200">
-          <p class="text-center text-sm text-gray-600 mb-4">Or continue with</p>
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <p class="text-center text-xs text-gray-600 mb-3">Or continue with</p>
           <div class="grid grid-cols-2 gap-3">
-            <!-- Google Login -->
             <button
               onclick="window.location.href='/auth/google'"
               type="button"
-              class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+              class="flex items-center justify-center px-3 py-2.5 border-2 border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all duration-200">
               <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              <span class="text-sm font-medium">Google</span>
+              <span class="text-xs font-medium">Google</span>
             </button>
 
-            <!-- Facebook Login -->
             <button
               onclick="window.location.href='/auth/facebook'"
               type="button"
-              class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+              class="flex items-center justify-center px-3 py-2.5 border-2 border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-all duration-200">
               <svg class="w-5 h-5 mr-2" fill="#1877F2" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>
-              <span class="text-sm font-medium">Facebook</span>
+              <span class="text-xs font-medium">Facebook</span>
             </button>
           </div>
         </div>
@@ -135,14 +191,17 @@
 </div>
 
 <!-- Success Toast -->
-<div id="successToast" class="hidden fixed top-20 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg z-50">
-  <p id="toastMessage" class="font-semibold"></p>
+<div id="successToast" class="hidden fixed top-16 right-4 bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2.5 rounded-lg shadow-2xl z-50 backdrop-blur-sm border border-green-500/20">
+  <div class="flex items-center gap-2">
+    <i class="fas fa-check-circle text-sm"></i>
+    <p id="toastMessage" class="text-sm font-medium"></p>
+  </div>
 </div>
 
 <script>
   function showToast(message, isError = false) {
     const toast = document.getElementById('successToast');
-    toast.className = `fixed top-20 right-4 px-6 py-4 rounded-lg shadow-lg z-50 ${isError ? 'bg-red-600' : 'bg-green-600'} text-white`;
+    toast.className = `fixed top-16 right-4 px-4 py-2.5 rounded-lg shadow-2xl z-50 backdrop-blur-sm border ${isError ? 'bg-gradient-to-r from-red-600 to-red-700 border-red-500/20' : 'bg-gradient-to-r from-green-600 to-green-700 border-green-500/20'} text-white flex items-center gap-2`;
     document.getElementById('toastMessage').textContent = message;
     toast.classList.remove('hidden');
     setTimeout(() => {
@@ -156,14 +215,13 @@
     const submitBtn = form.querySelector('button[type="submit"]');
     
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Logging in...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Logging in...</span>';
 
     const data = {
       email: form.email.value,
       password: form.password.value,
-      remember: form.remember.checked // ✅ this sends true/false
+      remember: form.remember.checked
     };
-
 
     try {
       const res = await fetch("/api/auth/login", {
@@ -179,16 +237,16 @@
         setTimeout(() => window.location.href = result.redirect || "/menu", 500);
       } else {
         const msgDiv = document.getElementById("msg");
-        msgDiv.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">${result.message}</div>`;
+        msgDiv.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg text-xs">${result.message}</div>`;
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Login';
+        submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Sign In</span>';
       }
     } catch (err) {
       const msgDiv = document.getElementById("msg");
-      msgDiv.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">Server error, please try again.</div>`;
+      msgDiv.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg text-xs">Server error, please try again.</div>`;
       console.error(err);
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Login';
+      submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Sign In</span>';
     }
   });
 </script>
