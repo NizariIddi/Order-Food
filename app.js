@@ -119,6 +119,23 @@ app.get("/reset-password/:token", (req, res) => {
   res.sendFile(path.join(__dirname, "views/reset-password.html"));
 });
 
+app.get("/terms", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/terms.html"));
+});
+
+app.get("/privacy", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/privacy.html"));
+});
+
+app.get("/help", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/help.html"));
+});
+
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/about.html"));
+});
+
+
 app.get("/admin", (req, res) => {
   if (!req.session.user || req.session.user.role !== "admin") {
     return res.status(403).send("Forbidden: Admins only");
