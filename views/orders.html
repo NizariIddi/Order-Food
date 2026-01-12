@@ -42,6 +42,14 @@
           <i class="fas fa-shopping-bag text-xs"></i>
           <span>Orders</span>
         </a>
+        <a 
+            id="logoutBtn" 
+            href="#"
+            class="px-3 py-1.5 rounded-lg bg-red-600/90 hover:bg-red-700 transition-all duration-200 cursor-pointer font-medium shadow-md ml-2 flex items-center gap-1.5"
+          >
+            <i class="fas fa-right-from-bracket text-xs"></i>
+            <span>Logout</span>
+          </a>
       </div>
 
       <!-- Mobile Hamburger Button -->
@@ -56,7 +64,7 @@
 <div id="mobileSidebar" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden">
   <div class="fixed right-0 top-0 h-full w-64 bg-gradient-to-b from-green-600 via-green-700 to-green-800 shadow-2xl transform transition-transform duration-300 translate-x-full" id="sidebarContent">
     <div class="flex justify-between items-center p-4 border-b border-white/20">
-      <h2 class="text-white font-bold text-lg">Menu</h2>
+      <h2 class="text-white font-bold text-lg">Navigation</h2>
       <button id="closeSidebarBtn" class="text-white hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
         <i class="fas fa-times text-lg"></i>
       </button>
@@ -73,6 +81,14 @@
       <a href="/orders" class="px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 flex items-center gap-3 text-white">
         <i class="fas fa-shopping-bag text-sm"></i>
         <span>Orders</span>
+      </a>
+      <a 
+          id="logoutBtnMobile" 
+          href="#"
+          class="px-4 py-3 rounded-lg bg-red-600/90 hover:bg-red-700 transition-all duration-200 cursor-pointer font-medium shadow-md flex items-center gap-3 text-white"
+        >
+          <i class="fas fa-right-from-bracket text-sm"></i>
+          <span>Logout</span>
       </a>
     </div>
   </div>
@@ -94,7 +110,7 @@
   </div>
 
   <!-- Stats -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+<div class="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
     <div class="bg-white p-4 rounded-lg shadow-lg border-l-4 border-green-600 fade-in hover:shadow-xl transition-shadow">
       <div class="flex items-center justify-between mb-1">
         <p class="text-xs text-gray-600 font-medium">Total Orders</p>
@@ -150,7 +166,7 @@
       </button>
       <button class="filter-btn px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-xs font-medium transition-all duration-200 hover:bg-gray-200 transform hover:scale-105 active:scale-95 flex items-center gap-1.5" data-status="cancelled">
         <i class="fas fa-times-circle text-xs"></i>
-        <span>Cancelled</span>
+        <span>Failed</span>
       </button>
     </div>
   </div>
@@ -202,6 +218,53 @@
     <p id="toastMessage" class="text-sm font-medium"></p>
   </div>
 </div>
+
+
+<!-- Feedback && Rating section-->
+
+ <!-- Floating Feedback Button -->
+<div class="fixed bottom-6 right-6 z-50">
+  <button
+    id="feedbackBtn"
+    class="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+  >
+    <i class="fas fa-star text-lg"></i>
+  </button>
+
+  <!-- Feedback Popup -->
+  <div
+    id="feedbackPopup"
+    class="hidden absolute bottom-16 right-0 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 animate-fade-in"
+  >
+    <h3 class="text-sm font-bold text-gray-800 mb-2">Rate your experience</h3>
+
+    <!-- Rating Stars -->
+    <div class="flex gap-1 mb-3" id="ratingStars">
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="1"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="2"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="3"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="4"></i>
+      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="5"></i>
+    </div>
+
+    <!-- Feedback Input -->
+    <textarea
+      id="feedbackText"
+      placeholder="Write your feedback..."
+      class="w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none mb-3"
+      rows="3"
+    ></textarea>
+
+    <!-- Submit -->
+    <button
+      id="submitFeedback"
+      class="w-full bg-green-600 hover:bg-green-700 text-white text-xs py-2 rounded-lg font-semibold transition"
+    >
+      Submit
+    </button>
+  </div>
+</div>
+
 
 <script>
 const container = document.getElementById("ordersContainer");
@@ -305,6 +368,10 @@ function filterOrders() {
 
 function renderOrders(orders) {
   container.innerHTML = "";
+
+  // ✅ Always hide empty state first
+  emptyState.classList.add("hidden");
+
   if (!orders.length) {
     emptyState.classList.remove("hidden");
     return;
@@ -316,6 +383,7 @@ function renderOrders(orders) {
     div.onclick = () => showOrderDetails(order);
 
     const statusLabel = order.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+
     div.innerHTML = `
       <div class="flex justify-between items-start mb-3">
         <div>
@@ -340,6 +408,7 @@ function renderOrders(orders) {
         </div>
       </div>
     `;
+
     container.appendChild(div);
   });
 }
@@ -395,10 +464,17 @@ function showOrderDetails(order) {
       <div class="flex gap-2 mt-4">
         <button id="cancelOrderBtn"
                 class="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] inline-flex items-center justify-center gap-1.5"
-                ${order.status === "completed" || order.status === "cancelled" ? "disabled style='opacity:0.5; cursor:not-allowed;'" : ""}>
+                ${order.status !== "pending" ? "disabled style='opacity:0.5; cursor:not-allowed;'" : ""}>
           <i class="fas fa-times-circle text-xs"></i>
           Cancel Order
         </button>
+
+        <button id="deleteOrderBtn"
+                class="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] inline-flex items-center justify-center gap-1.5">
+          <i class="fas fa-trash text-xs"></i>
+          Delete Order
+        </button>
+
         <button onclick="closeOrderModal()"
                 class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2.5 rounded-lg text-xs font-bold transition-all duration-200 inline-flex items-center justify-center gap-1.5">
           Close
@@ -410,7 +486,9 @@ function showOrderDetails(order) {
   document.getElementById('orderModal').classList.remove('hidden');
 
   const cancelBtn = document.getElementById('cancelOrderBtn');
-  if (order.status !== "completed" && order.status !== "cancelled") {
+  const deleteBtn = document.getElementById('deleteOrderBtn');
+  if (order.status === "pending") {
+    deleteBtn.classList.add('hidden')
     cancelBtn.onclick = async () => {
       if (!confirm("⚠️ Are you sure you want to cancel this order?")) return;
       try {
@@ -429,6 +507,43 @@ function showOrderDetails(order) {
       }
     };
   }
+
+  // Delete Order (only completed)
+  if (order.status === "completed") {
+    cancelBtn.classList.add("hidden")
+    deleteBtn.onclick = async () => {
+      if (!confirm("⚠️ Are you sure you want to delete this completed order? This cannot be undone.")) return;
+      try {
+        const res = await fetch(`/api/orders/${order.id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showToast(`Order #${order.id} deleted successfully!`);
+          closeOrderModal();
+          fetchOrders();
+        } else {
+          const result = await res.json();
+          alert(result.message || "Failed to delete order");
+        }
+      } catch(err) {
+        alert("Error deleting order");
+        console.error(err);
+      }
+    };
+  }
+
+  if(order.status === "in-progress") {
+    cancelBtn.classList.add('hidden');
+    deleteBtn.classList.add('hidden');
+  }
+
+  if(order.status === 'cancelled') {
+    cancelBtn.classList.add('hidden')
+    content.innerHTML += `
+      <p class="text-red-600 text-xs mt-2 text-center bg-red-200/30 p-4 rounded-lg">
+        This order couldn't be completed, since we don't have the asked amount.
+      </p>
+    `;
+  }
+
 }
 
 function closeOrderModal() {
@@ -442,7 +557,84 @@ function showToast(message) {
   setTimeout(() => toast.classList.add('hidden'), 3000);
 }
 
-fetchOrders();
+
+// Feedback and Rating Section
+let selectedRating = 0;
+
+const feedbackBtn = document.getElementById("feedbackBtn");
+const feedbackPopup = document.getElementById("feedbackPopup");
+const stars = document.querySelectorAll("#ratingStars i");
+
+feedbackBtn.addEventListener("click", () => {
+  feedbackPopup.classList.toggle("hidden");
+});
+
+/* Star Rating */
+stars.forEach(star => {
+  star.addEventListener("click", () => {
+    selectedRating = star.dataset.value;
+    stars.forEach(s => {
+      s.classList.toggle("text-yellow-400", s.dataset.value <= selectedRating);
+      s.classList.toggle("text-gray-300", s.dataset.value > selectedRating);
+    });
+  });
+});
+
+/* Submit Feedback */
+document.getElementById("submitFeedback").addEventListener("click", async () => {
+  const feedback = document.getElementById("feedbackText").value;
+
+  if (selectedRating === 0) {
+    alert("Please select a rating ⭐");
+    return;
+  }
+
+  //send to backend
+
+  await fetch("/api/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      rating: selectedRating,
+      feedback
+    })
+  });
+
+  showToast("Thank you for your feedback! ❤️");
+
+  // Reset
+  selectedRating = 0;
+  stars.forEach(s => s.classList.replace("text-yellow-400", "text-gray-300"));
+  document.getElementById("feedbackText").value = "";
+  feedbackPopup.classList.add("hidden");
+});
+
+
+    // Logout handlers for both desktop and mobile
+    function handleLogout(e) {
+      e.preventDefault();
+      
+      if (confirm("⚠️ Are you sure you want to logout?")) {
+        fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include"
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data.message);
+          window.location.href = "/";
+        })
+        .catch(error => {
+          console.error("Logout failed:", error);
+          alert("Failed to logout. Please try again.");
+        });
+      }
+    }
+
+    fetchOrders();
+    document.getElementById("logoutBtn").addEventListener("click", handleLogout);
+    document.getElementById("logoutBtnMobile").addEventListener("click", handleLogout);
 </script>
 </body>
 </html>

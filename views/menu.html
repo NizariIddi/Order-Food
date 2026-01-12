@@ -16,6 +16,9 @@
 .animate-fade-in {
   animation: fadeIn 0.25s ease-out;
 }
+body::-webkit-scrollbar {
+  display: none;
+}
 </style>
 
 
@@ -66,7 +69,7 @@
 <div id="mobileSidebar" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden">
   <div class="fixed right-0 top-0 h-full w-64 bg-gradient-to-b from-green-600 via-green-700 to-green-800 shadow-2xl transform transition-transform duration-300 translate-x-full" id="sidebarContent">
     <div class="flex justify-between items-center p-4 border-b border-white/20">
-      <h2 class="text-white font-bold text-lg">Menu</h2>
+      <h2 class="text-white font-bold text-lg">Navigation</h2>
       <button id="closeSidebarBtn" class="text-white hover:bg-white/20 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
         <i class="fas fa-times text-lg"></i>
       </button>
@@ -97,6 +100,9 @@
   </div>
 </div>
 
+<!-- Mobile Cart Overlay -->
+<div id="cartOverlay" class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden"></div>
+
 <div class="flex flex-col lg:flex-row min-h-screen mx-auto">
 
   <!-- MENU ITEMS -->
@@ -111,14 +117,25 @@
     <div id="menuContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 max-w-7xl"></div>
   </div>
 
+  <!-- Mobile Cart Icon (visible only on small screens) -->
+  <button id="mobileCartBtn" class="lg:hidden fixed bottom-12 right-6 z-40 w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-110">
+    <i class="fas fa-shopping-cart text-lg"></i>
+    <span id="cartBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">0</span>
+  </button>
+
   <!-- CART SIDEBAR -->
-  <div class="w-full lg:w-1/4 bg-white lg:border-l border-gray-200 shadow-2xl order-first lg:order-last lg:sticky lg:top-12 lg:h-[calc(100vh-3rem)]">
-    <div class="p-4 lg:overflow-y-auto lg:h-full">
-      <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
-        <div class="bg-gradient-to-br from-green-100 to-green-50 p-1.5 rounded-lg">
-          <i class="fas fa-shopping-cart text-green-600 text-sm"></i>
+  <div id="cartSidebar" class="fixed lg:relative inset-y-0 right-0 w-[90%] sm:w-[80%] lg:w-1/4 bg-white lg:border-l border-gray-200 shadow-2xl order-first lg:order-last lg:sticky lg:top-12 lg:h-[calc(100vh-3rem)] transform translate-x-full lg:translate-x-0 transition-transform duration-300 z-50">
+    <div class="p-4 lg:overflow-hidden h-full">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+        <div class="flex items-center gap-2">
+          <div class="bg-gradient-to-br from-green-100 to-green-50 p-1.5 rounded-lg">
+            <i class="fas fa-shopping-cart text-green-600 text-sm"></i>
+          </div>
+          <h2 class="text-sm font-bold text-gray-800">Shopping Cart</h2>
         </div>
-        <h2 class="text-sm font-bold text-gray-800">Shopping Cart</h2>
+        <button id="closeCartBtn" class="lg:hidden text-gray-600 hover:bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+          <i class="fas fa-times text-lg"></i>
+        </button>
       </div>
 
       <div id="cartItems" class="space-y-2 mb-4"></div>
@@ -197,61 +214,22 @@
   </div>
 </div>
 
-
-<!-- Feedback && Rating section-->
-
- <!-- Floating Feedback Button -->
-<div class="fixed bottom-6 right-6 z-50">
-  <button
-    id="feedbackBtn"
-    class="w-14 h-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-2xl flex items-center justify-center transition-all duration-300 transform hover:scale-110"
-  >
-    <i class="fas fa-star text-lg"></i>
-  </button>
-
-  <!-- Feedback Popup -->
-  <div
-    id="feedbackPopup"
-    class="hidden absolute bottom-16 right-0 w-72 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 animate-fade-in"
-  >
-    <h3 class="text-sm font-bold text-gray-800 mb-2">Rate your experience</h3>
-
-    <!-- Rating Stars -->
-    <div class="flex gap-1 mb-3" id="ratingStars">
-      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="1"></i>
-      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="2"></i>
-      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="3"></i>
-      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="4"></i>
-      <i class="fas fa-star text-gray-300 cursor-pointer" data-value="5"></i>
-    </div>
-
-    <!-- Feedback Input -->
-    <textarea
-      id="feedbackText"
-      placeholder="Write your feedback..."
-      class="w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-green-500 resize-none mb-3"
-      rows="3"
-    ></textarea>
-
-    <!-- Submit -->
-    <button
-      id="submitFeedback"
-      class="w-full bg-green-600 hover:bg-green-700 text-white text-xs py-2 rounded-lg font-semibold transition"
-    >
-      Submit
-    </button>
-  </div>
-</div>
-
-
 <script>
-let cart = [];
+// Load cart from localStorage on page load
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
 // Mobile Sidebar Functionality
 const hamburgerBtn = document.getElementById('hamburgerBtn');
 const closeSidebarBtn = document.getElementById('closeSidebarBtn');
 const mobileSidebar = document.getElementById('mobileSidebar');
 const sidebarContent = document.getElementById('sidebarContent');
+
+// Mobile Cart Functionality
+const mobileCartBtn = document.getElementById('mobileCartBtn');
+const closeCartBtn = document.getElementById('closeCartBtn');
+const cartSidebar = document.getElementById('cartSidebar');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartBadge = document.getElementById('cartBadge');
 
 function openSidebar() {
   mobileSidebar.classList.remove('hidden');
@@ -267,6 +245,30 @@ function closeSidebar() {
   }, 300);
 }
 
+function openCart() {
+  cartOverlay.classList.remove('hidden');
+  setTimeout(() => {
+    cartSidebar.classList.remove('translate-x-full');
+  }, 10);
+}
+
+function closeCart() {
+  cartSidebar.classList.add('translate-x-full');
+  setTimeout(() => {
+    cartOverlay.classList.add('hidden');
+  }, 300);
+}
+
+function updateCartBadge() {
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  if (totalItems > 0) {
+    cartBadge.textContent = totalItems;
+    cartBadge.classList.remove('hidden');
+  } else {
+    cartBadge.classList.add('hidden');
+  }
+}
+
 hamburgerBtn.addEventListener('click', openSidebar);
 closeSidebarBtn.addEventListener('click', closeSidebar);
 mobileSidebar.addEventListener('click', (e) => {
@@ -274,6 +276,10 @@ mobileSidebar.addEventListener('click', (e) => {
     closeSidebar();
   }
 });
+
+mobileCartBtn.addEventListener('click', openCart);
+closeCartBtn.addEventListener('click', closeCart);
+cartOverlay.addEventListener('click', closeCart);
 
 function showToast(message) {
   const toast = document.getElementById('successToast');
@@ -334,11 +340,17 @@ async function loadMenu() {
 
 loadMenu();
 
+// Initialize cart UI on page load
+updateCartUI();
+
 /* ================= CART ================= */
 function addToCart(id, name, price) {
   const existing = cart.find(i => i.id === id);
   if (existing) { existing.quantity++; } 
   else { cart.push({ id, name, price, quantity: 1 }); }
+
+  // Save to localStorage
+  localStorage.setItem('cart', JSON.stringify(cart));
 
   showToast(`${name} added to cart!`);
   updateCartUI();
@@ -367,9 +379,9 @@ function updateCartUI() {
       <div class="flex justify-between items-start mb-2">
         <div class="flex-1">
           <p class="font-semibold text-gray-800 text-xs mb-0.5">${item.name}</p>
-          <p class="text-xs text-gray-500">$${item.price} × ${item.quantity}</p>
+          <p class="text-xs text-gray-500">${item.price} × ${item.quantity}</p>
         </div>
-        <p class="font-bold text-gray-900 text-sm">$${(item.price * item.quantity).toFixed(2)}</p>
+        <p class="font-bold text-gray-900 text-sm">${(item.price * item.quantity).toFixed(2)}</p>
       </div>
       <div class="flex gap-1.5 justify-end">
         <button onclick="changeQty(${item.id}, -1)" class="w-7 h-7 bg-gray-200 hover:bg-gray-300 rounded-lg font-bold text-xs transition-all duration-200 transform hover:scale-110 active:scale-95 flex items-center justify-center">
@@ -384,6 +396,7 @@ function updateCartUI() {
   });
 
   totalSpan.textContent = total.toFixed(2);
+  updateCartBadge();
 }
 
 function changeQty(id, delta) {
@@ -391,6 +404,10 @@ function changeQty(id, delta) {
   if (!item) return;
   item.quantity += delta;
   if (item.quantity <= 0) { cart = cart.filter(i => i.id !== id); }
+  
+  // Save to localStorage
+  localStorage.setItem('cart', JSON.stringify(cart));
+  
   updateCartUI();
 }
 
@@ -435,7 +452,11 @@ async function confirmOrder() {
   if (res.ok) {
     closeOrderModal();
     showToast(`Order placed successfully! Order ID: ${result.orderId}`);
+    
+    // Clear cart and localStorage
     cart = [];
+    localStorage.removeItem('cart');
+    
     updateCartUI();
   } else {
     alert(result.message || "Failed to place order");
@@ -465,60 +486,6 @@ function handleLogout(e) {
 
 document.getElementById("logoutBtn").addEventListener("click", handleLogout);
 document.getElementById("logoutBtnMobile").addEventListener("click", handleLogout);
-
-
-// Feedback and Rating Section
-let selectedRating = 0;
-
-const feedbackBtn = document.getElementById("feedbackBtn");
-const feedbackPopup = document.getElementById("feedbackPopup");
-const stars = document.querySelectorAll("#ratingStars i");
-
-feedbackBtn.addEventListener("click", () => {
-  feedbackPopup.classList.toggle("hidden");
-});
-
-/* Star Rating */
-stars.forEach(star => {
-  star.addEventListener("click", () => {
-    selectedRating = star.dataset.value;
-    stars.forEach(s => {
-      s.classList.toggle("text-yellow-400", s.dataset.value <= selectedRating);
-      s.classList.toggle("text-gray-300", s.dataset.value > selectedRating);
-    });
-  });
-});
-
-/* Submit Feedback */
-document.getElementById("submitFeedback").addEventListener("click", async () => {
-  const feedback = document.getElementById("feedbackText").value;
-
-  if (selectedRating === 0) {
-    alert("Please select a rating ⭐");
-    return;
-  }
-
-  //send to backend
-
-  await fetch("/api/feedback", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({
-      rating: selectedRating,
-      feedback
-    })
-  });
-
-  showToast("Thank you for your feedback! ❤️");
-
-  // Reset
-  selectedRating = 0;
-  stars.forEach(s => s.classList.replace("text-yellow-400", "text-gray-300"));
-  document.getElementById("feedbackText").value = "";
-  feedbackPopup.classList.add("hidden");
-});
-
 </script>
 
 </body>
