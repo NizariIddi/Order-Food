@@ -13,6 +13,7 @@ const redirectIfLoggedIn = require("./middleware/redirectIfLoggedIn");
 const feedbackRoutes = require("./routes/feedback");
 const statsRouter = require("./routes/stats");
 const testimonialsRoute = require("./routes/testmonials");
+const profileRoutes = require("./routes/profile");
 const app = express();
 
 // Body parsers
@@ -53,6 +54,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/stats", statsRouter);
 app.use("/api/testmonials", testimonialsRoute);
+app.use("/api/user", isLoggedIn, profileRoutes);
 
 // Google OAuth routes
 app.get(
@@ -124,6 +126,10 @@ app.get("/forgot-password", (req, res) => {
 app.get("/reset-password/:token", (req, res) => {
   res.sendFile(path.join(__dirname, "views/reset-password.html"));
 });
+
+app.get('/profile', (req, res) => {
+    res.sendFile(path.join(__dirname, "views/user-profile.html"));
+})
 
 app.get("/terms", (req, res) => {
   res.sendFile(path.join(__dirname, "views/terms.html"));
