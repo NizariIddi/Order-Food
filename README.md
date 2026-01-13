@@ -76,8 +76,8 @@ MySQL Database
 | Runtime         | Node.js                          |
 | Framework       | Express.js                       |
 | Database        | MySQL                            |
-| Templating      | Express Views (EJS / PUG / HTML) |
-| Styling         | CSS                              |
+| Templating      | Express Views (HTML) |
+| Styling         | TailwindCSS                             |
 | Version Control | Git & GitHub                     |
 
 ---
@@ -149,7 +149,7 @@ PORT=3000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
-DB_NAME=order_food
+DB_NAME=food_ordering
 ```
 
 ⚠️ **Never commit your `.env` file to GitHub**
@@ -173,7 +173,7 @@ npm run dev
 ### Access in Browser
 
 ```
-http://localhost:3000
+http://localhost:4000
 ```
 
 ---
@@ -225,7 +225,7 @@ This project is open‑source and available for learning and development purpose
 
 ---
 
-### 👤 Author
+### 👤 Authors
 
-**Nizari Iddi**
-GitHub: [https://github.com/NizariIddi](https://github.com/NizariIddi)
+**Nizari Iddi** && **David Maleek**
+GitHub: [https://github.com/NizariIddi](https://github.com/NizariIddi) && [https://github.com/DnMaleek(https://github.com/DnMaleek)]
