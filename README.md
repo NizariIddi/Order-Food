@@ -227,5 +227,5 @@ This project is open‑source and available for learning and development purpose
 
 ### 👤 Authors
 
-**Nizari Iddi** && **David Maleek**
-GitHub: [https://github.com/NizariIddi](https://github.com/NizariIddi) && [https://github.com/DnMaleek(https://github.com/DnMaleek)]
+**Nizari Iddi** && **David Maleek** <br>
+GitHub: [https://github.com/NizariIddi](https://github.com/NizariIddi) && [https://github.com/DnMaleek](https://github.com/DnMaleek)
