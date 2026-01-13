@@ -76,8 +76,8 @@ MySQL Database
 | Runtime         | Node.js                          |
 | Framework       | Express.js                       |
 | Database        | MySQL                            |
-| Templating      | Express Views (HTML) |
-| Styling         | TailwindCSS                             |
+| Templating      | Express Views (HTML)             |
+| Styling         | TailwindCSS                      |
 | Version Control | Git & GitHub                     |
 
 ---
