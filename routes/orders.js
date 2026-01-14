@@ -86,7 +86,6 @@ router.delete("/:id", isLoggedIn, (req, res) => {
   const userId = req.session.user.id;
   const orderId = parseInt(req.params.id);
 
-  // Check if order exists and belongs to the user
   db.query(
     "SELECT status FROM orders WHERE id = ? AND user_id = ?",
     [orderId, userId],
@@ -94,19 +93,57 @@ router.delete("/:id", isLoggedIn, (req, res) => {
       if (err) return res.status(500).json({ message: "Database error" });
       if (!results.length) return res.status(404).json({ message: "Order not found" });
 
-      const order = results[0];
+      const status = results[0].status;
 
-      if (order.status === "completed" || order.status === "cancelled") {
-        return res.status(400).json({ message: "Cannot cancel completed or already cancelled order" });
+      // ❌ In-progress → no action allowed
+      if (status === "in-progress") {
+        return res.status(400).json({
+          message: "Order is being prepared and cannot be modified"
+        });
       }
 
-      // Delete Order cancelled
-      db.query("DELETE FROM orders WHERE id = ?", [orderId], (err) => {
-          if (err) return res.status(500).json({ message: "Database error" });
-          res.json({ message: "Order permanently deleted" });
-        });
+      // ✅ Pending → cancel order
+      if (status === "pending") {
+        db.query(
+          "UPDATE orders SET status = 'cancelled' WHERE id = ?",
+          [orderId],
+          (err) => {
+            if (err) return res.status(500).json({ message: "Database error" });
+            return res.json({ message: "Order cancelled successfully" });
           }
         );
-      });
+        return;
+      }
 
+      // ✅ Completed→ delete order
+      if (status === "completed") {
+        db.query(
+          "DELETE FROM orders WHERE id = ?",
+          [orderId],
+          (err) => {
+            if (err) return res.status(500).json({ message: "Database error" });
+            return res.json({ message: "Order permanently deleted" });
+          }
+        );
+        return;
+      }
+
+      // Cancelled → delete order
+      if (status === "cancelled") {
+        db.query(
+          "DELETE FROM orders WHERE id = ?",
+          [orderId],
+          (err) => {
+            if (err) return res.status(500).json({ message: "Database error" });
+            return res.json({ message: "Order permanently deleted" });
+          }
+        );
+        return;
+      }
+
+      // Fallback safety
+      res.status(400).json({ message: "Invalid order state" });
+    }
+  );
+});
 module.exports = router;

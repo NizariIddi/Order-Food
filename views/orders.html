@@ -494,62 +494,78 @@ function showOrderDetails(order) {
 
   const cancelBtn = document.getElementById('cancelOrderBtn');
   const deleteBtn = document.getElementById('deleteOrderBtn');
-  if (order.status === "pending") {
-    deleteBtn.classList.add('hidden')
-    cancelBtn.onclick = async () => {
-      if (!confirm("⚠️ Are you sure you want to cancel this order?")) return;
-      try {
-        const res = await fetch(`/api/orders/${order.id}`, { method: 'DELETE' });
-        if (res.ok) {
-          showToast(`Order #${order.id} cancelled successfully!`);
-          closeOrderModal();
-          fetchOrders();
-        } else {
-          const result = await res.json();
-          alert(result.message || "Failed to cancel order");
-        }
-      } catch(err) {
-        alert("Error cancelling order");
-        console.error(err);
+  // Default: hide both
+cancelBtn.classList.add("hidden");
+deleteBtn.classList.add("hidden");
+
+// ✅ Pending → can cancel
+if (order.status === "pending") {
+  deleteBtn.classList.add("hidden");
+  cancelBtn.classList.remove("hidden");
+
+  cancelBtn.onclick = async () => {
+    if (!confirm("⚠️ Are you sure you want to cancel this order?")) return;
+
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast(`Order ${ordercode} cancelled successfully!`);
+        closeOrderModal();
+        fetchOrders();
+      } else {
+        const result = await res.json();
+        alert(result.message || "Failed to cancel order");
       }
-    };
-  }
+    } catch (err) {
+      alert("Error cancelling order");
+      console.error(err);
+    }
+  };
+}
 
-  // Delete Order (only completed)
-  if (order.status === "completed") {
-    cancelBtn.classList.add("hidden")
-    deleteBtn.onclick = async () => {
-      if (!confirm("⚠️ Are you sure you want to delete this completed order? This cannot be undone.")) return;
-      try {
-        const res = await fetch(`/api/orders/${order.id}`, { method: 'DELETE' });
-        if (res.ok) {
-          showToast(`Order #${order.id} deleted successfully!`);
-          closeOrderModal();
-          fetchOrders();
-        } else {
-          const result = await res.json();
-          alert(result.message || "Failed to delete order");
-        }
-      } catch(err) {
-        alert("Error deleting order");
-        console.error(err);
+// ✅ Completed OR Cancelled → can delete
+if (order.status === "completed" || order.status === "cancelled") {
+  cancelBtn.classList.add("hidden");
+  deleteBtn.classList.remove("hidden");
+
+  deleteBtn.onclick = async () => {
+    if (!confirm("⚠️ Are you sure you want to delete this order? This cannot be undone.")) return;
+
+    try {
+      const res = await fetch(`/api/orders/${order.id}`, { method: 'DELETE' });
+      if (res.ok) {
+        showToast(`Order ${ordercode} deleted successfully!`);
+        closeOrderModal();
+        fetchOrders();
+      } else {
+        const result = await res.json();
+        alert(result.message || "Failed to delete order");
       }
-    };
-  }
+    } catch (err) {
+      alert("Error deleting order");
+      console.error(err);
+    }
+  };
+}
 
-  if(order.status === "in-progress") {
-    cancelBtn.classList.add('hidden');
-    deleteBtn.classList.add('hidden');
-  }
+// ❌ In progress → no actions
+if (order.status === "in-progress") {
+  cancelBtn.classList.add("hidden");
+  deleteBtn.classList.add("hidden");
+}
 
-  if(order.status === 'cancelled') {
-    cancelBtn.classList.add('hidden')
-    content.innerHTML += `
-      <p class="text-red-600 text-xs mt-2 text-center bg-red-200/30 p-4 rounded-lg">
-        This order couldn't be completed, since we don't have the asked amount.
-      </p>
-    `;
-  }
+// ℹ️ Cancelled message
+if (order.status === "cancelled") {
+  content.insertAdjacentHTML(
+  "beforeend",
+  `
+  <p class="text-red-600 text-xs mt-2 text-center bg-red-200/30 p-4 rounded-lg">
+    This order couldn't be completed, since we don't have the requested amount.
+  </p>
+  `
+);
+}
+
 
 }
 
