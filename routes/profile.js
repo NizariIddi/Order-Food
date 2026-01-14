@@ -88,30 +88,56 @@ router.put("/", (req, res) => {
 /**
  * UPDATE password
  */
-router.put("/password", async (req, res) => {
+router.delete("/delete", (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ message: "User not logged in" });
+  }
+
   const userId = req.session.user.id;
-  const { currentPassword, newPassword } = req.body;
 
+  // 1. Check user role
   db.query(
-    "SELECT password FROM users WHERE id = ?",
+    "SELECT role FROM users WHERE id = ?",
     [userId],
-    async (err, results) => {
-      if (err || results.length === 0)
-        return res.status(400).json({ message: "User not found" });
+    (err, results) => {
+      if (err) {
+        console.error("MySQL error:", err);
+        return res.status(500).json({ message: "Server error" });
+      }
 
-      const isMatch = await bcrypt.compare(
-        currentPassword,
-        results[0].password
-      );
-      if (!isMatch)
-        return res.status(400).json({ message: "Wrong current password" });
+      if (results.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
 
-      const hashed = await bcrypt.hash(newPassword, 10);
+      // 2. Restrict admin deletion
+      if (results[0].role === "admin") {
+        return res.status(403).json({
+          message: "Admin account cannot be deleted",
+        });
+      }
 
+      // 3. Delete customer account
       db.query(
-        "UPDATE users SET password = ? WHERE id = ?",
-        [hashed, userId],
-        () => res.json({ message: "Password updated" })
+        "DELETE FROM users WHERE id = ?",
+        [userId],
+        (err) => {
+          if (err) {
+            console.error("MySQL error:", err);
+            return res.status(500).json({ message: "Failed to delete account" });
+          }
+
+          // 4. Destroy session
+          req.session.destroy((err) => {
+            if (err) {
+              console.error("Session destroy error:", err);
+              return res.status(500).json({
+                message: "Account deleted but failed to log out",
+              });
+            }
+
+            res.json({ message: "Account deleted successfully" });
+          });
+        }
       );
     }
   );

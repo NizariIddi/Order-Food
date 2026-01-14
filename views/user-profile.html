@@ -634,7 +634,7 @@ document.getElementById('personalInfoForm').addEventListener('submit', async (e)
         confirmText: "Delete",
         onConfirm: async () => {
           try {
-            const response = await fetch("/api/profile", {
+            const response = await fetch("/api/user/delete", {
               method: "DELETE",
               credentials: "include",
             });
@@ -645,8 +645,15 @@ document.getElementById('personalInfoForm').addEventListener('submit', async (e)
               showToast(data.message || "Failed to delete account");
               return;
             }
+            showModal({
+              title: "Thank You, Bye!",
+              message: "Account deleted successful",
+              confirmText: "Ok"
+            });
 
-            window.location.href = "/login.html";
+            setInterval(() => {
+              window.location.href = "/login";
+            }, 3000 )
           } catch (error) {
             showToast("Something went wrong");
           }
