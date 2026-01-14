@@ -207,7 +207,7 @@
     function openUpdateModal(order) {
       document.getElementById('update_order_id').value = order.order_id;
       document.getElementById('modal_order_date').textContent =formatDateTime(order.created_at);
-      document.getElementById('modal_order_id').textContent = order.order_id;
+      document.getElementById('modal_order_id').textContent = formatOrderCode(order.order_id);
       document.getElementById('modal_customer').textContent = `${order.customer_name} (${order.customer_email})`;
       document.getElementById('modal_status').value = order.status;
       document.getElementById('updateModal').classList.remove('hidden');
@@ -251,6 +251,13 @@
           });
         }
 
+        function formatOrderCode(orderId) {
+          const prefix = "O";
+          const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+          return `${prefix}${orderId}-${random}`;
+        }
+
+
     async function fetchOrders() {
       const res = await fetch("/api/admin/orders");
       const orders = await res.json();
@@ -269,6 +276,7 @@
       }
 
       orders.forEach(order => {
+        const ordercode = formatOrderCode(order.order_id)
         const tr = document.createElement("tr");
         tr.className = "border-b border-gray-100 hover:bg-gradient-to-r hover:from-green-50 hover:to-transparent transition-all duration-200";
 
@@ -299,7 +307,7 @@
         };
 
         tr.innerHTML = `
-          <td class="px-3 py-2.5 text-xs font-bold text-gray-700">#${order.order_id}</td>
+          <td class="px-3 py-2.5 text-xs font-bold text-gray-700"><i class="fas fa-utensils text-xs text-green-700 font-bold"></i> ${ordercode}</td>
           <td class="px-3 py-2.5 text-xs">
             <div class="font-medium text-gray-800">${order.customer_name}</div>
             <div class="text-gray-500 text-xs">${order.customer_email}</div>
