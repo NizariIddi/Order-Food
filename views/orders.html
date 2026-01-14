@@ -423,7 +423,7 @@ function renderOrders(orders) {
 function showOrderDetails(order) {
   const content = document.getElementById('orderDetailsContent');
   const statusLabel = order.status.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-
+  const ordercode = formatOrderCode(order.id)
   let itemsHtml = '';
   if (order.items && Array.isArray(order.items)) {
     itemsHtml = order.items.map(item => `
@@ -440,7 +440,7 @@ function showOrderDetails(order) {
         <div>
           <h3 class="text-base font-bold text-gray-800 flex items-center gap-1.5">
             <i class="fas fa-receipt text-green-600 text-sm"></i>
-            Order #${order.id}
+            Order ${ordercode}
           </h3>
           <p class="text-gray-600 text-xs mt-1.5 flex items-center gap-1.5">
             <i class="far fa-calendar text-xs"></i>
