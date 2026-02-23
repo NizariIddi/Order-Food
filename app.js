@@ -32,7 +32,7 @@ app.use(
       secure: false, // set true if using HTTPS
       sameSite: "lax",
     },
-  })
+  }),
 );
 
 // Passport initialization for Google OAuth
@@ -64,7 +64,7 @@ app.get(
     req.session.rememberMe = true;
     next();
   },
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
 );
 
 app.get(
@@ -89,22 +89,23 @@ app.get(
     delete req.session.rememberMe;
 
     res.redirect(req.user.role === "admin" ? "/admin" : "/menu");
-  }
+  },
 );
-
 
 // HTML pages
 app.get("/", (req, res) => {
   if (req.session && req.session.user) {
-    return res.redirect(
-      req.session.user.role === "admin" ? "/admin" : "/menu"
-    );
+    return res.redirect(req.session.user.role === "admin" ? "/admin" : "/menu");
   }
 
   res.sendFile(path.join(__dirname, "views/index.html"));
 });
-app.get("/login", redirectIfLoggedIn, (req, res) => res.sendFile(path.join(__dirname, "views/login.html")));
-app.get("/register", redirectIfLoggedIn, (req, res) => res.sendFile(path.join(__dirname, "views/register.html")));
+app.get("/login", redirectIfLoggedIn, (req, res) =>
+  res.sendFile(path.join(__dirname, "views/login.html")),
+);
+app.get("/register", redirectIfLoggedIn, (req, res) =>
+  res.sendFile(path.join(__dirname, "views/register.html")),
+);
 
 // Admin Orders Page (frontend)
 app.get("/admin/orders", (req, res) => {
@@ -127,9 +128,9 @@ app.get("/reset-password/:token", (req, res) => {
   res.sendFile(path.join(__dirname, "views/reset-password.html"));
 });
 
-app.get('/profile', (req, res) => {
-    res.sendFile(path.join(__dirname, "views/user-profile.html"));
-})
+app.get("/profile", (req, res) => {
+  res.sendFile(path.join(__dirname, "views/user-profile.html"));
+});
 
 app.get("/terms", (req, res) => {
   res.sendFile(path.join(__dirname, "views/terms.html"));
@@ -147,7 +148,6 @@ app.get("/about", (req, res) => {
   res.sendFile(path.join(__dirname, "views/about.html"));
 });
 
-
 app.get("/admin", (req, res) => {
   if (!req.session.user || req.session.user.role !== "admin") {
     return res.status(403).send("Forbidden: Admins only");
@@ -157,4 +157,6 @@ app.get("/admin", (req, res) => {
 
 // Server
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`),
+);
